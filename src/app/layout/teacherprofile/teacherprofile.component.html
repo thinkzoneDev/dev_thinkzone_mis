@@ -1,0 +1,202 @@
+<div [@routerTransition]>
+    <!--<app-page-header [heading]="'Users'" [icon]="'fa-table'"></app-page-header>-->
+    <div class="row">
+        <div class="col col-xl-12 col-lg-12">
+            <div class="card mb-3">
+                <div class="card-header">
+					<div class="row">
+						<div class="col col-xl-4 col-lg-4">
+							<h4>TEACHER PROFILE</h4>
+						</div>
+						
+						<div class="col">
+							<button (click)="open(content, null)" class="btn btn-sm btn-primary float-right" type="button"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;Add Teacher Profile</button>
+							
+							<!-- Modal starts from here -->
+							<ng-template #content let-c="close" let-d="dismiss">
+								<div class="modal-body largewidth">									
+									<div class="form-content">
+										<div class="row">
+											<div class="col col-xl-3 col-lg-3"></div>
+											<div class="col col-xl-6 col-lg-6">
+												<div class="form-group">
+													<input value="{{ modal_id }}" [(ngModel)]="modal_id" type="hidden">
+												</div>
+											</div>
+										</div>
+										
+										<div class="row">
+											<div class="col col-xl-2 col-lg-2">
+												Name
+											</div>
+											<div class="col col-xl-4 col-lg-4">
+												<div class="form-group">
+													<input value="{{ modal_teachername }}" [(ngModel)]="modal_teachername" type="text" class="form-control input-underline input-lg" placeholder="Teacher name">
+												</div>
+											</div>
+											<div class="col col-xl-2 col-lg-2">
+												Contact number
+											</div>
+											<div class="col col-xl-4 col-lg-4">
+												<div class="form-group">
+													<input value="{{ modal_contactno }}" [(ngModel)]="modal_contactno" type="text" class="form-control input-underline input-lg" placeholder="Contact Number" >
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col col-xl-2 col-lg-2">
+												Qualification
+											</div>
+											<div class="col col-xl-4 col-lg-4">
+												<div class="form-group">
+													<select value="{{ modal_qualification }}" (change)="onSelect_modal_qualification($event)" class="form-control">
+														<option value="matric">Matric</option>
+														<option value="intermediate">Intermediate</option>
+														<option value="graduate">Graduate</option>
+														<option value="masters">Masters</option>
+														<option value="doctorate">Doctorate</option>
+														<option value="other">Others</option>
+													</select>
+												</div>														
+											</div>
+											<div class="col col-xl-2 col-lg-2">
+												Address
+											</div>
+											<div class="col col-xl-4 col-lg-4">
+												<div class="form-group">
+													<input value="{{ modal_address }}" [(ngModel)]="modal_address" type="text" class="form-control input-underline input-lg" placeholder="Teacher Address" >
+												</div>														
+											</div>
+										</div>
+										
+										<div class="row">
+											<div class="col col-xl-2 col-lg-2">
+												Special initiatives
+											</div>
+											<div class="col col-xl-4 col-lg-4">
+												<div class="form-group">
+													<input value="{{ modal_specialinitiatives }}" [(ngModel)]="modal_specialinitiatives" type="text" class="form-control input-underline input-lg" placeholder="Special Initiatives">
+												</div>
+											</div>
+											<div class="col col-xl-2 col-lg-2">
+												Aspirations
+											</div>
+											<div class="col col-xl-4 col-lg-4">
+												<div class="form-group">
+													<input value="{{ modal_aspirations }}" [(ngModel)]="modal_aspirations" type="text" class="form-control input-underline input-lg" placeholder="Aspirations">
+												</div>
+											</div>
+										</div>
+
+										<div class="row">
+											<div class="col col-xl-2 col-lg-2">
+												Centre start date
+											</div>
+											<div class="col col-xl-4 col-lg-4">
+												<div class="form-group">
+													<ejs-datepicker format="dd-MM-yyyy" strictMode='true' id='datepicker' placeholder='Select a date'
+													  [value]='dateValue' [min]='minDate' [max]='maxDate' (change)="datepicker_onchange($event)"
+													  [(ngModel)]="modal_startdate"></ejs-datepicker>
+												</div>
+											</div>
+											<div class="col col-xl-2 col-lg-2">
+												Pre-program training marks secured
+											</div>
+											<div class="col col-xl-4 col-lg-4">
+												<div class="form-group">
+													<input value="{{ modal_pretrainingmark }}" [(ngModel)]="modal_pretrainingmark" type="text" class="form-control input-underline input-lg" placeholder="Pre-program Training Mark">
+												</div>
+											</div>
+										</div>
+									</div>									
+								</div>
+								<div class="modal-footer largewidth">
+									<button type="button" class="btn btn-danger" (click)="c('Close click')">Cancel</button>
+									<button type="button" (click)="save_button_click()" class="btn btn-success">&nbsp;&nbsp;&nbsp;Save&nbsp;&nbsp;&nbsp;</button>
+								</div>
+							</ng-template>
+						</div>
+					</div>					
+                </div>
+                <div class="card-body table-responsive">
+					<div id="loading_indicator" class="loading_indicator" [hidden]="hideLoading_indicator" >
+						<span class=""><img src="assets/images/loader3.gif" alt="Loading. Please wait..." ></span>
+					</div>
+                    <table class="table table-striped" [mfData]="allteacherprofile_data" #mf="mfDataTable" [mfRowsOnPage]="4">
+					  <thead>
+					  <tr>
+						  <th style="width: 20%">
+							  <input type="text" (keyup)='search($event.target.value)'>
+							  <mfDefaultSorter by="teachername">Teacher Name</mfDefaultSorter>
+						  </th>
+						  <th style="width: 5%">
+							  <mfDefaultSorter by="qualification">Qualification</mfDefaultSorter>
+						  </th>
+						  <th style="width: 10%">
+							  <mfDefaultSorter by="">Contact No.</mfDefaultSorter>
+						  </th>
+						  <th style="width: 10%">
+							  <mfDefaultSorter by="address">Address</mfDefaultSorter>
+						  </th>
+						  <th style="width: 10%">
+							  <mfDefaultSorter by="">Sp. initiatives</mfDefaultSorter>
+						  </th>
+						  <th style="width: 10%">
+							  <mfDefaultSorter by="">Aspirations</mfDefaultSorter>
+						  </th>
+						  <th style="width: 10%">
+							  <mfDefaultSorter by="center_start_date">Start date</mfDefaultSorter>
+						  </th>
+						  <th style="width: 5%">
+							  <mfDefaultSorter by="preprogram_training_mark">Pre-training mark</mfDefaultSorter>
+						  </th>
+						  <th style="width: 5%">
+							  <mfDefaultSorter by="status">Status</mfDefaultSorter>
+						  </th>
+						  <th style="width: 15%">
+							  Action
+						  </th>
+					  </tr>
+					  </thead>
+					  <tbody>
+					  <tr *ngFor="let teacherprofile of mf.data">
+						  <td><span class="bold-font">{{teacherprofile.teachername}}</span></td>
+						  <td>{{teacherprofile.qualification}}</td>
+						  <td>{{teacherprofile.contactno}}</td>
+						  <td>{{teacherprofile.address}}</td>
+						  <td>{{teacherprofile.special_initiatives}}</td>
+						  <td>{{teacherprofile.aspirations}}</td>
+						  <td>{{teacherprofile.center_start_date | date:'mediumDate'}}</td>
+						  <td>{{teacherprofile.preprogram_training_mark}}</td>
+						  <td>{{teacherprofile.status}}</td>
+						  <td>
+								<div class="row">
+									<div>
+										<span class="grey-font" *ngIf="teacherprofile.status == 'active'; else disabledUsertype">
+											<button type="button" class="btn btn-primary input-block-level form-control edit-button" (click)="open(content,teacherprofile)"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+											<button type="button" class="btn btn-danger" (click)="disable_button_click(teacherprofile, 'disabled')">Disable</button>
+										</span>
+										<ng-template #disabledUsertype>
+											<span class="grey-font">
+												<button type="button" class="btn btn-primary" (click)="disable_button_click(teacherprofile, 'active')">Enable</button>
+											</span>
+										</ng-template>
+									</div>
+								</div>
+						  </td>
+					  </tr>
+					  </tbody>
+					  <tfoot>
+					  <tr>
+						  <td colspan="4">
+							  <!--<mfBootstrapPaginator [rowsOnPageSet]="[5,10,25]"></mfBootstrapPaginator>-->
+							  <mfBootstrapPaginator></mfBootstrapPaginator> 
+						  </td>
+					  </tr>
+					  </tfoot>
+					</table>
+                </div>
+            </div>                       
+        </div>        
+    </div>
+</div>

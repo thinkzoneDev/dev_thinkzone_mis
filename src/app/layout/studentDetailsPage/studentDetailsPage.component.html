@@ -1,0 +1,757 @@
+<div [@routerTransition]>
+    <!--<app-page-header [heading]="'Users'" [icon]="'fa-table'"></app-page-header>-->
+    <div class="row">
+        <div class="col col-xl-12 col-lg-12">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col col-xl-4 col-lg-4">
+                            <h4 style="font-size: 16px; margin-top: 5px;color: black;">Student Details</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="padding: 25px; font-size: 13px;color: black;" *ngIf = "api_hit">
+                    <div class="col-2">
+                        <label>Baseline Completed</label>
+                        <select class="form-control select2" [(ngModel)]="baseline" name="baseline" style="font-size: 14px; height: 30px;">
+							<option value="all">All</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+                    </div>
+
+                    <div class="col-2">
+                        <label>70% in ECE</label>
+                        <select class="form-control select2" [(ngModel)]="seventyece" style="font-size: 14px; height: 30px;">
+                            <option value="all">All</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>  
+                        </select>
+                    </div>
+
+                    <div class="col-2">
+                        <label>Gender</label>
+                        <select class="form-control select2" [(ngModel)]="sex" style=" height: 30px;">
+                            <option value="all">All</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="col-2">
+                        <label>Average Attendance</label>
+                        <select class="form-control select2" [(ngModel)]="avg_attendance" style=" height: 30px;">
+                            <option value="all">All</option>
+                            <option value="lessfifety"> < = 50% </option>
+                            <option value="lessseventyfive"> > 50%  -  < = 75% </option>
+                            <option value="moreseventyfive"> > 75% </option>
+                        </select>
+                    </div>
+
+                    <div class="col-2">
+                        <label>Enrollment Date</label>
+                        <input type="month" id="month" name="input" [(ngModel)]="enrolldate" class="form-control select2"/>
+                    </div>
+                </div>
+
+                <div class="row" style="padding: 25px; font-size: 13px;color: black;"  *ngIf = "api_hit">
+                    <div class="col-2">
+                        <label>Center Type</label>
+                        <select class="form-control select2" [(ngModel)]="center_type" style="font-size: 14px; height: 30px;">
+							<option value="all">All</option>
+							<option value="anganwadi">Aganwadi</option>
+							<option value="school">School</option>
+							<option value="fellow">Fellow</option>
+						</select>
+                    </div>
+
+                    <div class="col-2">
+                        <label>Select District</label>
+                        <select class="form-control select2" [(ngModel)]="distric" (change)="selectBlock(distric)" style=" height: 30px;">
+							<option value="all">All</option>
+							<option *ngFor="let distic of allDistics" value={{distic.districtvalue}}>{{distic.districtvalue}}
+							</option>
+						</select>
+                    </div>
+
+                    <div class="col-2">
+                        <label>Select Block</label>
+                        <select class="form-control select2" [(ngModel)]="block" style=" height: 30px;">
+							<option value="all">All</option>
+							<option *ngFor="let block of all_blocks" value={{block.block}}>{{block.block}}</option>
+						</select>
+                    </div>
+
+                    <div class="col-2">
+                        <label>Program Type</label>
+                        <select class="form-control select2" id="program_type" [(ngModel)]="p_type" name="p_type" style=" height: 30px;">)
+							<option value="all" selected>All</option>
+							<option value="ece">ECE</option>
+							<option value="pge">PGE</option>
+						</select>
+                    </div>
+                
+                    <div class="col-2">
+                        <button type="button" (click)="viewData()" class="btn btn-info" style="margin-top:29px;">Filter</button>
+                    </div>
+
+                    <div class="col-2">
+                        <div class="row" style="float: right;">
+                            <i class="fa fa-download" (click)="download()" title="Download" style="cursor: pointer;"></i>
+                        </div>
+                    </div>
+
+                    <!-- <div class="col-2" style="width: 20%;margin-left: 79%;margin-top: 3%;">
+                        <label>Search</label>
+                        <input type="text" (keyup)='search($event.target.value)'>
+                    </div> -->
+                </div>
+
+                <div id="loading_indicator" class="loading_indicator" *ngIf="!isLoaded">
+                    <span class=""><img src="assets/images/loader3.gif" style="padding: 25px;" alt="Loading. Please wait..."></span>
+                </div>
+
+                <div id="table-scroll" class="table-scroll" *ngIf="isLoaded">
+                       <div class="table-wrap" style="overflow-x:auto; margin-top: -2%;">
+                        <table class="table table-striped main-table" *ngIf="isLoaded && !isdata_table" [mfData]="getallStudents"
+                         #mf="mfDataTable" [mfRowsOnPage]="mfRowsOnPage" [mfActivePage] = 'mfActivePage' (mfOnPageChange)="onPageChange($event)"> 
+                            <thead>
+                                <tr>
+
+
+                                    <th>Name</th>
+                                    <th>Date of Enrollment</th>
+                                    <th>Gender</th>
+                                    <th>Center Name</th>
+                                    <th>Centerid</th>
+                                    <th>Center Type</th>
+                                    <th>Program Type</th>
+                                    <th>Block</th>
+                                    <th>District</th>
+                                    <th>State</th>
+                                    <th>PhoneNo</th>
+                                    <th *ngIf="canDisplay('ece')">ECE Level</th>
+                                    <th *ngIf="canDisplay('pge')">PG Maths Level</th>
+                                    <!-- <th>PG Maths Level</th> -->
+                                    <th *ngIf="canDisplay('pge')">PG English Level</th>
+                                    <th *ngIf="canDisplay('pge')">PG Odia Level</th>
+                                    <th *ngIf="canDisplay('pge')">Maths Assessment Score</th>
+                                    <th *ngIf="canDisplay('pge')">English Assessment Score</th>
+                                    <th *ngIf="canDisplay('pge')">Odia Assessment Score</th>
+                                    <th *ngIf="canDisplay('ece')">Quarterly ECE Assessment Score</th>
+                                    <!-- <th>Avg Quarterly Assessment Score</th> -->
+                                    <th> Avg Attendance</th>
+                                    <th *ngIf="canDisplay('pge')">No of Endline Assessment Completed in PG</th>
+                                    <th *ngIf="canDisplay('pge')">No of Levels jumped in Maths</th>
+                                    <th *ngIf="canDisplay('pge')">No of Levels jumped in Odia</th>
+                                    <th *ngIf="canDisplay('pge')">No of Levels jumped in English</th>
+                                    <th *ngIf="canDisplay('ece')">Total Number of Quarter 4 Assessment Completed in ECE</th>
+                                    <th *ngIf="canDisplay('ece')">Acheived atleast 70% age-appropriate learning outcomes in ECE</th>
+                                    <th> Baseline Test Completed </th>
+                                    <th *ngIf="canDisplay('pge')">Class/Grade of the Student</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let user of mf.data;let i=index" class="record-row" id='user_{{i}}' (click)="highlight(i)">
+                                    <td class="sname" aria-hidden="true" (click)="openStudentDetails(editmodal,user)">
+                                        {{user.student.studentname |titlecase}}</td>
+                                    <td>{{getDate(user)}}</td>
+                                    <td>{{user.student.gender |titlecase}}</td>
+                                    <td>{{user.student.user.centername |titlecase}}</td>
+                                    <td>{{user.student.user.centerid}}</td>
+                                    <td>{{user.student.user.usertype |titlecase}}</td>
+                                    <td style=" text-transform :uppercase">{{user.student.program |uppercase}}</td>
+                                    <td style=" text-transform: capitalize;">{{user.student.user.block |titlecase}}</td>
+                                    <td style=" text-transform: capitalize;">{{user.student.user.districtvalue |titlecase}}</td>
+                                    <td style=" text-transform: capitalize;">{{user.student.user.statevalue |titlecase}}</td>
+                                    <td>{{user.student.phone}}</td>
+                                    <td *ngIf="canDisplay('ece')">{{user.student.ec_level}}</td>
+                                    <td *ngIf="canDisplay('pge')">{{user.student.math_level}}</td>
+                                    <td *ngIf="canDisplay('pge')">{{user.student.eng_level}}</td>
+                                    <td  *ngIf="canDisplay('pge')">{{user.student.odia_level}}</td>
+                                    <td  *ngIf="canDisplay('pge')">
+                                                    
+                              <div class="tint"aria-hidden="true" *ngIf="user && user.student && user.student.program == 'pge'" (click)="openmathAssessDetails(edit,user)" >Maths Assessments</div>
+                        
+                                    </td>
+                                    <td  *ngIf="canDisplay('pge')">
+                                        <div class="tint"  *ngIf="user && user.student && user.student.program == 'pge'" aria-hidden="true" (click)="openenglishAssessDetails(editm,user)">English Assessments</div>
+                                    </td>
+                                    <!-- {{getRoundedValue(user.scores.odia.value)}}%
+                                {{getRoundedValue(user.scores.english.value)}}% -->
+                                    <td  *ngIf="canDisplay('pge')">
+                                        <div class="tint"  *ngIf="user && user.student && user.student.program == 'pge'" aria-hidden="true" (click)="openodiaAssessDetails(edito,user)">Odia Assessments</div>
+
+                                    </td>
+                                    <td  *ngIf="canDisplay('ece')">
+                                        <div class="tint" *ngIf="user && user.student && user.student.program != 'pge'" aria-hidden="true" (click)="openQuaterlyAssessDetails(editq,user)">ECE Assessments</div>
+                                    </td>
+                                    <td>{{user.avg_attendancce}}%</td>
+
+                                    <td  *ngIf="canDisplay('pge')"><span *ngIf="user && user.student && user.student.program == 'pge'">
+                                   
+                                            <div class="chip"  >Eng &nbsp;: &nbsp;{{user.engbaseline}}
+                                            </div>
+                                            <div class="chipp">odia &nbsp;: &nbsp;{{user.odiabaseline}}
+                                            </div>
+                                            <div class="chiip">math &nbsp;: &nbsp;{{user.mathbaseline}}
+                                            </div>
+                                    
+                                       </span>
+                                    </td>
+                                    <td  *ngIf="canDisplay('pge')"><span *ngIf="user && user.student && user.student.program == 'pge'">{{user.jumpmath}}</span></td>
+                                    <td  *ngIf="canDisplay('pge')"><span *ngIf="user && user.student && user.student.program == 'pge'">{{user.jumpodia}}</span></td>
+                                    <td  *ngIf="canDisplay('pge')"><span *ngIf="user && user.student && user.student.program == 'pge'">{{user.jumpeng}}</span></td>
+                                    <td *ngIf="canDisplay('ece')"><span *ngIf="user && user.student && user.student.program == 'ece'">{{user.quarter4ece}}</span></td>
+                                    <td *ngIf="canDisplay('ece')"><span *ngIf="user && user.student && user.student.program == 'ece'">{{user.ispass}}</span></td>
+                                    <td><span *ngIf="user && user.student && user.student.program">{{user.isparticipated}}</span></td>
+                                    <td *ngIf="canDisplay('pge')">{{user.student.class}}</td>
+                                                                        
+
+                                    
+                                </tr>
+
+                            </tbody>
+
+
+                            <tfoot>
+                                <tr>
+                                    <td colspan="40">
+                                        <ngb-pagination (pageChange)="getPageNo($event)" [pageSize]="10" [collectionSize]="count" [(page)]="page" [maxSize]="5" [rotate]="true" [boundaryLinks]="true"></ngb-pagination>
+                                        <!--<mfBootstrapPaginator [rowsOnPageSet]="[5,10,25]"></mfBootstrapPaginator>-->
+                                        <!-- <mfBootstrapPaginator></mfBootstrapPaginator> -->
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+                        <div class="loader" *ngIf ="loader" style="top: 50%;
+                        position: fixed;
+                        left: 50%;"></div>
+
+                    </div>
+                </div>
+                <div class="row" *ngIf="isdata_table" style="text-align: center;margin:10%;margin-left:30%">
+                    <h1>Oops!!</h1>
+                    <br>
+                    <span style="margin-top: 20px;">There is no Data For Selected Fields</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #edit let-c="close" let-d="dismiss">
+    <form role="form" >
+    
+        <div class="modal-body" style="margin-left: 1%;color: #867e95;font-size: 15px;">
+            <div class="accordion" id="accordionExample" >
+                <div class="card">
+                 
+              
+                  <div id="collapseOne"  class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample" >
+                    <div class="card-body">
+
+                        <table class="tb" >
+                        <tr>
+                            <th scope="row" class="tat">Assessment 1 :</th>
+                            <td>{{getRoundedValue(assessDetails.scores.math.month1.value)}}</td>
+                            <td>{{assessDetails.scores.math.month1.isgiven}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tat">Assessment 2 :</th>
+                            <td>{{getRoundedValue(assessDetails.scores.math.month2.value)}}</td>
+                            <td>{{assessDetails.scores.math.month2.isgiven}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tat">Assessment 3 :</th>
+                            <td>{{getRoundedValue(assessDetails.scores.math.month3.value)}}</td>
+                            <td>{{assessDetails.scores.math.month3.isgiven}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tat">Assessment 4 :</th>
+                            <td>{{getRoundedValue(assessDetails.scores.math.month4.value)}}</td>
+                            <td>{{assessDetails.scores.math.month4.isgiven}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tat">Assessment 5 :</th>
+                            <td>{{getRoundedValue(assessDetails.scores.math.month5.value)}}</td>
+                            <td>{{assessDetails.scores.math.month5.isgiven}}</td>
+                        </tr>
+                        </table>
+                        
+                       
+                        
+                    </div>
+                  </div>
+                </div>
+               
+                        
+                      </div>
+                    </div>
+                
+            
+	
+       
+        <div class="modal-footer" style="margin-right: 8%;">
+            <button class="footerbutton" type="button" (click)="c('Close click')" class="btn btn-default">Cancel</button>
+        </div>
+    </form>
+</ng-template>
+
+
+
+
+<ng-template #editm let-c="close" let-d="dismiss">
+    <form role="form" >
+    
+        <div class="modal-body" style="margin-left: 1%;color: #867e95;font-size: 15px;">
+            <div class="accordion" id="accordionExample" >
+                <div class="card">
+                 
+              
+                  <div id="collapseOne"  class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample" >
+                    <div class="card-body">
+
+                        <table class="tb" >
+                            <tr>
+                                <th scope="row" class="tat">Assessment 1 :</th>
+                                <td>{{getRoundedValue(assessDetails.scores.english.month1.value)}}</td>
+                                <td>{{assessDetails.scores.english.month1.isgiven}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="tat" >Assessment 2 :</th>
+                                <td>{{getRoundedValue(assessDetails.scores.english.month2.value)}}</td>
+                                <td>{{assessDetails.scores.english.month2.isgiven}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="tat">Assessment 3 :</th>
+                                <td>{{getRoundedValue(assessDetails.scores.english.month3.value)}}</td>
+                                <td>{{assessDetails.scores.english.month3.isgiven}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="tat">Assessment 4 :</th>
+                                <td>{{getRoundedValue(assessDetails.scores.english.month4.value)}}</td>
+                                <td>{{assessDetails.scores.english.month4.isgiven}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="tat">Assessment 5 :</th>
+                                <td>{{getRoundedValue(assessDetails.scores.english.month5.value)}}</td>
+                                <td>{{assessDetails.scores.english.month5.isgiven}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    </div>
+
+        <div class="modal-footer" style="margin-right: 8%;">
+            <button class="footerbutton" type="button" (click)="c('Close click')" class="btn btn-default">Cancel</button>
+        </div>
+        </div>
+        </div>
+        </div>
+        
+    </form>
+</ng-template>
+
+
+
+<ng-template #edito let-c="close" let-d="dismiss">
+    <form role="form" >
+    
+        <div class="modal-body" style="margin-left: 1%;color: #867e95;font-size: 15px;">
+            <div class="accordion" id="accordionExample" >
+                <div class="card">
+                 
+              
+                  <div id="collapseOne"  class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample" >
+                    <div class="card-body">
+
+                        <table class="tb" >
+                            <tr>
+                                <th scope="row" class="tat" >Assessment 1 :</th>
+                                <td>{{getRoundedValue(assessDetails.scores.odia.month1.value)}}</td>
+                                <td>{{assessDetails.scores.odia.month1.isgiven}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="tat">Assessment 2 :</th>
+                                <td>{{getRoundedValue(assessDetails.scores.odia.month2.value)}}</td>
+                                <td>{{assessDetails.scores.odia.month2.isgiven}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="tat">Assessment 3 :</th>
+                                <td>{{getRoundedValue(assessDetails.scores.odia.month3.value)}}</td>
+                                <td>{{assessDetails.scores.odia.month3.isgiven}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="tat">Assessment 4 :</th>
+                                <td>{{getRoundedValue(assessDetails.scores.odia.month4.value)}}</td>
+                                <td>{{assessDetails.scores.odia.month4.isgiven}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="tat">Assessment 5 :</th>
+                                <td>{{getRoundedValue(assessDetails.scores.odia.month5.value)}}</td>
+                                <td>{{assessDetails.scores.odia.month5.isgiven}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    </div>
+
+        <div class="modal-footer" style="margin-right: 8%;">
+            <button class="footerbutton" type="button" (click)="c('Close click')" class="btn btn-default">Cancel</button>
+        </div>
+        </div>
+        </div>
+        </div>
+        
+    </form>
+</ng-template>
+
+
+
+<ng-template #editq let-c="close" let-d="dismiss">
+    <form role="form" >
+    
+        <div class="modal-body" style="margin-left: 1%;color: #867e95;font-size: 15px;">
+            <div class="accordion" id="accordionExample" >
+                <div class="card">
+                 
+              
+                  <div id="collapseOne"  class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample" >
+                    <div class="card-body">
+
+                        <table class="tb" >
+                        <tr>
+                            <th scope="row" class="tat">Quarter 1 :</th>
+                            <td>{{getRoundedValue(assessDetails.scores.quarter1.value)}}</td>
+                            <td>{{assessDetails.scores.quarter1.isgiven}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tat">Quarter 2 :</th>
+                            <td>{{getRoundedValue(assessDetails.scores.quarter2.value)}}</td>
+                            <td>{{assessDetails.scores.quarter2.isgiven}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tat">Quarter 3 :</th>
+                            <td>{{getRoundedValue(assessDetails.scores.quarter3.value)}}</td>
+                            <td>{{assessDetails.scores.quarter3.isgiven}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tat">Quarter 4 :</th>
+                            <td>{{getRoundedValue(assessDetails.scores.quarter4.value)}}</td>
+                            <td>{{assessDetails.scores.quarter4.isgiven}}</td>
+                        </tr>
+                       
+                        </table>
+                        
+                       
+                        
+                    </div>
+                  </div>
+                </div>
+               
+                        
+                      </div>
+                    </div>
+                
+            
+	
+       
+        <div class="modal-footer" style="margin-right: 8%;">
+            <button class="footerbutton" type="button" (click)="c('Close click')" class="btn btn-default">Cancel</button>
+        </div>
+    </form>
+</ng-template>
+
+
+
+<ng-template #editmodal let-c="close" let-d="dismiss">
+    <form role="form" >
+    <div class="row"> 
+        <span class="cross" style="cursor: pointer;"><i class="fa fa-times" (click) ="c('Close click')" aria-hidden="true"></i></span>
+    
+		<label class ="heading" >
+            
+            
+            <span>{{userDetails.student.studentname}} Detail</span>
+        </label>
+        </div>
+        <div class="modal-body" style="margin-left: 1%;color: #867e95;font-size: 15px;">
+            <div class="accordion" id="accordionExample" >
+                <div class="card">
+                  <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                      <button class="btn btn-link collapsed" style=" margin-top: -10px;" (click)="show('shoDetails')" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                       Basic Details
+                      </button>
+                    </h2>
+                  </div>
+              
+                  <div id="collapseOne" *ngIf="check" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample" >
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-6 sideheading" >Student Name &nbsp;:</div>
+                            <div class="col-6" style="text-transform:capitalize;">{{userDetails.student.studentname}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">Date of Enrollment&nbsp;:</div>
+                            <div class="col-6">{{getDate(userDetails)}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">Gender&nbsp;:</div>
+                            <div class="col-6">{{userDetails.student.gender}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">Name of the type&nbsp;:</div>
+                            <div class="col-6" style="text-transform:capitalize;">{{userDetails.student.user.usertype}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">Center Name</div>
+                            <div class="col-6" style="text-transform:uppercase;">{{userDetails.student.center.centername}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">Center Id</div>
+                            <div class="col-6" style="text-transform:uppercase;">{{userDetails.student.center.centerid}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">Center Type</div>
+                            <div class="col-6" style="text-transform:uppercase;">{{userDetails.student.center.centertype}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">Block</div>
+                            <div class="col-6" style="text-transform:capitalize;">{{userDetails.student.center.block}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">District</div>
+                            <div class="col-6" style="text-transform:capitalize;">{{userDetails.student.center.district}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">State</div>
+                            <div class="col-6" style="text-transform:capitalize;">{{userDetails.state}}</div>
+                        </div>
+              
+                        
+                    </div>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-header" id="headingTwo">
+                    <h2 class="mb-0">
+                      <button class="btn btn-link collapsed" style=" margin-top: -10px;"  (click)="show('eceDetails')" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                       ECE Details
+                      </button>
+                    </h2>
+                  </div>
+                  <div id="collapseTwo"  *ngIf="check1" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-4 sideheading">ECE Level &nbsp;: </div>
+                            <div class="col-8">{{userDetails.student.ec_level}}</div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-header" id="headingThree">
+                    <h2 class="mb-0">
+                      <button class="btn btn-link collapsed"  style=" margin-top: -10px;" (click)="show('pgeDetails')" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                        PGE Details
+                      </button>
+                    </h2>
+                  </div>
+                  <div id="collapseThree"  *ngIf="check2" class="collapse show"  aria-labelledby="headingThree" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 sideheading">PG Maths Level :</div>
+                            <div class="col-6">{{userDetails.student.math_level}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">PG English Level :</div>
+                            <div class="col-6">{{userDetails.student.eng_level}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 sideheading">PG Odia Level :</div>
+                            <div class="col-6">{{userDetails.student.odia_level}}</div>
+                        </div>
+                        
+                    </div>
+                  </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingfour">
+                      <h2 class="mb-0">
+                        <button class="btn btn-link collapsed" style=" margin-top: -10px;"   (click)="show('scoresDetails')" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                         Scores
+                        </button>
+                      </h2>
+                    </div>
+                    <div id="collapsefour" *ngIf="check3" class="collapse show"  aria-labelledby="headingfour" data-parent="#accordionExample">
+                      <div class="card-body">
+                        <div class="row" *ngIf="userDetails && userDetails.student && userDetails.student.program == 'pge'">
+                            <div class="col-8 sideheading">Maths Assessment Score</div>
+                            <div class="col-4">
+                                <div class="tint"aria-hidden="true" *ngIf="userDetails" (click)="openmathAssessDetails(edit,userDetails)" >View</div>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="userDetails && userDetails.student && userDetails.student.program == 'pge'">
+                            <div class="col-8 sideheading">English Assessment Score</div>
+                            <div class="col-4">
+                                <div class="tint"  *ngIf="userDetails" aria-hidden="true" (click)="openenglishAssessDetails(editm,userDetails)">View</div>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="userDetails && userDetails.student && userDetails.student.program == 'pge'">
+                            <div class="col-8 sideheading">Odia Assessment Score</div>
+                            <div class="col-4">
+                                <div class="tint"  *ngIf="userDetails " aria-hidden="true" (click)="openodiaAssessDetails(edito,userDetails)">View</div>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="userDetails && userDetails.student && userDetails.student.program == 'ece'">
+                            <div class="col-8 sideheading">Quarterly ECE Assessment Score</div>
+                            <div class="col-4">
+                                <div class="tint" *ngIf="userDetails" aria-hidden="true" (click)="openQuaterlyAssessDetails(editq,userDetails)">View</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 sideheading">Average Attendance</div>
+                            <div class="col-4">{{userDetails.avg_attendancce}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 sideheading">No of Endline Assessment Completed in PG</div>
+                            <div class="col-4"><span *ngIf="userDetails">
+                                   
+                                <div class="chip" >Eng &nbsp;: &nbsp;{{userDetails.engbaseline}}
+                                </div>
+                                <div class="chipp">odia &nbsp;: &nbsp;{{userDetails.odiabaseline}}
+                                </div>
+                                <div class="chiip">math &nbsp;: &nbsp;{{userDetails.mathbaseline}}
+                                </div>
+                        
+                           </span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 sideheading">No of Level Jumped in maths</div>
+                            <div class="col-4">{{userDetails.jumpmath}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 sideheading">No of Level Jumped in odia</div>
+                            <div class="col-4">{{userDetails.jumpodia}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 sideheading">No of Level Jumped in English</div>
+                            <div class="col-4">{{userDetails.jumpeng}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 sideheading"> Number of Quarter 4 Assessment Completed in ECE</div>
+                            <div class="col-4">{{userDetails.quarter4ece}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8 sideheading"> 70% age-appropriate learning outcomes in ECE
+                            </div>
+                            <div class="col-4">{{userDetails.ispass}}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-8 sideheading">Baseline Test Completed</div>
+                            <div class="col-4">{{userDetails.isparticipated}}</div>
+                        </div>
+                       
+                        <div class="row">
+                            <div class="col-8 sideheading">Class/Grade</div>
+                            <div class="col-4">{{userDetails.student.class}}</div>
+                        </div>
+                       
+                        
+                        
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            
+<!-- 			
+            <div class="row">
+                <span>Student Name &nbsp;:  &nbsp;&nbsp;&nbsp;{{userDetails.student.studentname}}</span>
+
+            </div>
+            <div class="row">
+                <span>Date of Enrollment &nbsp;:  &nbsp;&nbsp;&nbsp; {{userDetails.student.registration_date}}</span>
+
+            </div>
+            <div class="row">
+                <span>Name of the type &nbsp;:  &nbsp;&nbsp;&nbsp; {{userDetails.user.usertype}}</span>
+
+			</div>
+         
+            <div class="row">
+                <span>Type &nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>Block&nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>District&nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>State&nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>ECE Level&nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>PG Maths Level &nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>PG English Level &nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>PG Odia Level &nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>Avg Monthly Assessment Score &nbsp; : &nbsp;&nbsp;&nbsp;{{userDetails.averages.AvgMonthlyAssestmentScore}}</span>
+
+            </div>
+            <div class="row">
+                <span>Quarterly Assessment Score &nbsp; : &nbsp;&nbsp;&nbsp;{{userDetails.averages.QuarterlyAssestmentScore}}</span>
+
+            </div>
+           
+            <div class="row">
+                <span>Monthly English Assessment Score &nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>Avg Quarterly Assessment Score &nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>Level Jumped &nbsp; : &nbsp;&nbsp;&nbsp;{{userDetails.averages.LevelJumped}}</span>
+
+            </div>
+            <div class="row">
+                <span>Age-appropriate Learning Outcomes Achieved &nbsp; : &nbsp;&nbsp;&nbsp;</span>
+
+            </div>
+            <div class="row">
+                <span>Average Attendance &nbsp; : &nbsp;&nbsp;&nbsp;{{userDetails.averages.AverageAttendance}}</span>
+
+            </div>
+            
+			 -->
+        </div>
+        <div class="modal-footer" style="margin-right: 8%;">
+            <button class="footerbutton" type="button" (click)="c('Close click')" class="btn btn-default">Cancel</button>
+        </div>
+    </form>
+</ng-template>
+
+
+

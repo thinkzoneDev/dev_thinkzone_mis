@@ -1,0 +1,632 @@
+<div [@routerTransition]>
+    <!--<app-page-header [heading]="'Users'" [icon]="'fa-table'"></app-page-header>-->
+    <div class="row">
+        <div class="col col-xl-12 col-lg-12">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col col-xl-4 col-lg-4">
+                            <h4 style="font-size: 16px; margin-top: 5px;color: black;">Manager Details</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="padding: 25px; font-size: 15px;color: black;" *ngIf = "api_hit">
+                    <div class="col-2">
+                        <label>Center Type</label>
+                        <select class="form-control select2" [(ngModel)]="center_type"
+                            style="font-size: 14px; height: 30px;">
+                            <option value="all">All</option>
+                            <option value="anganwadi">Anganwadi</option>
+                            <option value="school">School</option>
+                            <option value="fellow">Fellow</option>
+                        </select>
+                    </div>
+                    <!-- <div class="col-2">
+                        <label>Year</label>
+                        <select class="form-control select2" [(ngModel)]="createdon" style="font-size: 14px; height: 30px;">
+                            <option value="all">All</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+
+                        </select>
+                    </div> -->
+                    <div class="col-2" >
+                        <label>Month</label>
+                        <input type="month" name = month  id="month1" [(ngModel)]="createdon">
+                    </div>
+                    <div class="col-2" style="margin-left: 5%;">
+                        <button type="button" (click)="viewData()" class="btn btn-info">Filter</button>
+                    </div>
+                    <div class="col-2">
+                        <div class="row" style="float: right;">
+
+                            <i class="fa fa-download" (click)="download()" title="Download" style="cursor: pointer;"></i>
+                        </div>
+
+
+                    </div>
+                    <!-- <div class="col-2">
+                        <div class="row" style="float: right;">
+
+                            <i class="fa fa-download" (click)="download()" title="Download" style="cursor: pointer;"></i>
+                        </div>
+
+
+                    </div> -->
+                    <!-- <div class="col-2" style="width: 20%;margin-left: 79%;margin-top: 3%;">
+                        <label>Search</label>
+                        
+                        
+                        <input type="text" (keyup)='search($event.target.value)'>
+                   
+                    </div> -->
+                </div>
+                
+                <div id="loading_indicator" class="loading_indicator" *ngIf="!isLoaded">
+                    <span class=""><img src="assets/images/loader3.gif" style="padding: 25px;"
+                            alt="Loading. Please wait..."></span>
+                </div>
+
+                <div id="table-scroll" class="table-scroll table1" *ngIf="isLoaded">
+                    <div class="table-wrap" style="overflow-x:auto;">
+                        <table class="table table-striped main-table" *ngIf="check &&  !isdata_table"
+                            [mfData]="all_managers_data" #mf="mfDataTable" [mfRowsOnPage]="25">
+                            <thead>
+                                <tr>
+                                    <!-- <th>Name</th> -->
+                                    <!-- <th>Center Name</th> -->
+                                    <!-- <th>Feedback Date</th> -->
+                                    <!-- <th>Contact No</th> -->
+                                    <th>Image</th>
+                                    <th *ngFor="let col_name of dyCols"> {{col_name}} </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- *ngIf="user && user.manager && user.manager.username"
+                                        (click)="dailyInfoT(editmodal,user)"
+                                        style="cursor: pointer; color:#007bff !important;" -->
+                                <tr *ngFor="let user of mf.data;let i=index" class="record-row" id='user_{{i}}' (click)="highlight(i)">
+                                    <!-- <td><span *ngIf="user && user.Details && user.Details.username">{{user.Details.username}}</span></td>
+                                    <td><span *ngIf="user && user.Details && user.Details.centername">{{user.Details.centername}}</span></td>
+                                    <td>{{getDate(user)}}</td> -->
+                                    <!-- <td>{{user.userData.contactnumber}}</td> -->
+                                    <td><div class="" (click)="show_picture(viewmodal,user)" style="text-align: center; cursor: pointer;color: red;"><i class="fa fa-picture-o" aria-hidden="true"></i></div>
+                                        <ng-template #viewmodal let-c="close" let-d="dismiss">
+                                            <div style="font-size: 25px;  color: #ffffff; background: #4a90ac; padding: 10px 50px;"> 
+                                                <div class="row">
+                                                    <div class="col-lg-10 col-md-10 col-sm-10">
+                                                        Center Image 
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-sm-2" style="font-weight: bold;text-align: right; cursor: pointer;" (click)="c('Close click')">
+                                                        X
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div id="loading_indicator" style="width: 100%; text-align: center;" [hidden]="hideModalLoading_indicator">
+                                                    <span class=""><img src="assets/images/loader4.gif" alt="Loading. Please wait..." style="width: 50%;"></span>
+                                                </div>	
+                                                <div class="row" [hidden]="!hideModalLoading_indicator">
+                                                    <div class="col-md-12" style="text-align: center;">
+                                                        <img [src]="(image_preview == null || image_preview == undefined || image_preview == '' ) ? '../../../assets/images/no_image_available.png' : image_preview" style="height:360px;width:240px">
+                                                    </div>
+                                                </div> 
+                                            </div>
+                                        </ng-template>
+                                    </td>
+                                    <td *ngFor="let col_name of dyCols">
+                                        {{ user[col_name] }}
+
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+
+                            <tfoot>
+                                <tr>
+                                    <td colspan="40">
+                                        <mfBootstrapPaginator [rowsOnPageSet]="[5,10,25]"></mfBootstrapPaginator>
+                                        <!-- <ngb-pagination (pageChange)="getPageNo($event)" [pageSize]="10" [collectionSize]="count" [(page)]="page" [maxSize]="5" [rotate]="true" [boundaryLinks]="true"></ngb-pagination> -->
+
+                                        <!-- <mfBootstrapPaginator></mfBootstrapPaginator> -->
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+                        <div class="loader" *ngIf ="loader" style="top: 50%;
+                        position: fixed;
+                        left: 50%;"></div>
+                   
+                        <!-- <div class="row"  style="text-align: center;margin:10%;margin-left:30%">
+                            <h1>Oops!!</h1>
+                            <br>
+                            <span style="margin-top: 20px;">There is no Data For Selected Fields</span>
+                        </div>  -->
+
+
+                    </div>
+                </div>
+
+
+
+
+                <div id="table-scroll" class="table-scroll table2" *ngIf="isLoaded">
+                    <div class="table-wrap" style="overflow-x:auto;">
+                        <table class="table table-striped main-table" *ngIf="check1 && !isdata_table"
+                            [mfData]="all_managers_data" #mf="mfDataTable" [mfRowsOnPage]="10">
+                            <thead>
+                                <tr>
+
+                                    <th>Name</th>
+                                    <th>Center</th>
+                                    <th>Date of Visit</th>
+                                    <th>Name of the PGE skills of Level 1</th>
+                                    <th>Name of the PGE skills of Level 2</th>
+                                    <th>Name of the PGE skills of Level 3</th>
+                                    <th>Name of the PGE skills of Level 4</th>
+                                    <th>Name of the PGE skills of Level 5</th>
+                                    <th>Name of the ECE skills of Level 1</th>
+                                    <th>Name of the ECE skills of Level 2</th>
+                                    <th>Name of the ECE skills of Level 3</th>
+
+
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let user of mf.data">
+                                    <td *ngIf="user && user.manager && user.manager.username"
+                                        style="cursor: pointer; color: #007bff !important;"
+                                        (click)="skilsss(edits,user)">{{user.manager.username}}</td>
+                                    <td>{{user.manager.centername}}</td>
+                                    <td>{{user.manager.date}}</td>
+                                    <td>{{user.name_of_pge_skills_level1}}</td>
+                                    <td>{{user.name_of_pge_skills_level2}}</td>
+                                    <td>{{user.name_of_pge_skills_level3}}</td>
+                                    <td>{{user.name_of_pge_skills_level4}}</td>
+                                    <td>{{user.name_of_pge_skills_level5}}</td>
+                                    <td>{{user.name_of_ece_skills_level1}}</td>
+                                    <td>{{user.name_of_ece_skills_level2}}</td>
+                                    <td>{{user.name_of_ece_skills_level3}}</td>
+
+
+
+
+                                </tr>
+
+                            </tbody>
+
+
+                            <tfoot>
+                                <tr>
+                                    <td colspan="40">
+                                        <!-- <mfBootstrapPaginator [rowsOnPageSet]="[5,10,25]"></mfBootstrapPaginator> -->
+                                        <mfBootstrapPaginator></mfBootstrapPaginator>
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+                        <!-- <div class="row"  style="text-align: center;margin:10%;margin-left:30%">
+                            <h1>Oops!!</h1>
+                            <br>
+                            <span style="margin-top: 20px;">There is no Data For Selected Fields</span>
+                        </div>  -->
+
+
+                    </div>
+                </div>
+
+
+
+                <div id="table-scroll" class="table-scroll table3" *ngIf="isLoaded">
+                    <div class="table-wrap" style="overflow-x:auto; ">
+                        <table class="table table-striped main-table" *ngIf="check2 && !isdata_table"
+                            [mfData]="all_managers_data" #mf="mfDataTable" [mfRowsOnPage]="10">
+                            <thead>
+                                <tr>
+
+                                    <th> Name</th>
+                                    <th>Center</th>
+                                    <th>Month</th>
+                                    <th>No.of days managers visit</th>
+                                    <th>No.of days educators present</th>
+                                    <th>No. of days activity plan is followed</th>
+                                    <th>No of days worksheets are done</th>
+                                    <th>Activities done</th>
+                                    <th>Kids performance</th>
+                                    <th>Doing Training Module</th>
+                                    <th>Educators performance</th>
+                                    <th>Test Being Done Regularly</th>
+                                    <th>PTM being conducted</th>
+
+
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr *ngFor="let user of mf.data">
+                                    <td *ngIf="user && user.manager && user.manager.username"
+                                        style="cursor: pointer; color: #007bff !important;"
+                                        (click)="monthlyDetails(editm,user)">{{user.manager.username}}</td>
+                                    <td>{{user.manager.centername}}</td>
+                                    <td>{{user.month}}</td>
+                                    <td>{{user.no_of_days_managers_visit}}</td>
+                                    <td>{{user.no_of_days_educators_visit}}</td>
+                                    <td>{{user.no_of_days_activity_plan}}</td>
+                                    <td>{{user.no_of_days_workSheet_done}}</td>
+                                    <td>{{user.activities_done}}</td>
+                                    <td>{{user.kids_performance}}</td>
+                                    <td>{{user.doing_training_module}}</td>
+                                    <td>{{user.educator_performance}}</td>
+                                    <td>{{user.test_being_done_regularly}}</td>
+                                    <td>{{user.ptm_being_conducted}}</td>
+
+
+
+                                </tr>
+
+                            </tbody>
+
+
+                            <tfoot>
+                                <tr>
+                                    <td colspan="40">
+                                        <mfBootstrapPaginator [rowsOnPageSet]="[5,10,25]"></mfBootstrapPaginator>
+                                        <!-- <mfBootstrapPaginator></mfBootstrapPaginator> -->
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+                        <!-- <div class="row"  style="text-align: center;margin:10%;margin-left:30%">
+                            <h1>Oops!!</h1>
+                            <br>
+                            <span style="margin-top: 20px;">There is no Data For Selected Fields</span>
+                        </div> -->
+
+
+                    </div>
+                </div>
+                <div id="table-scroll" class="table-scroll table4" *ngIf="isLoaded">
+                    <div class="table-wrap" style="overflow-x:auto;">
+                        <table class="table table-striped main-table" *ngIf="check3 && !isdata_table"
+                            [mfData]="all_managers_data" #mf="mfDataTable" [mfRowsOnPage]="10">
+                            <thead>
+                                <tr>
+
+                                    <th>Name</th>
+                                    <th>Center</th>
+                                    <th>Date of Visit</th>
+                                    <th>Extra Activity</th>
+                                    <th>Supervisor's Feedback</th>
+                                    <th>Headmaster's Feedback</th>
+                                    <th>Parent's Feedback</th>
+                                    <th>Specific Issues from the center</th>
+
+
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let user of mf.data">
+                                    <td *ngIf="user && user.manager && user.manager.username"
+                                        style="cursor: pointer; color:#007bff !important;"
+                                        (click)=feedbackDetails(editf,user)>{{user.manager.username}}</td>
+                                    <td>{{user.manager.centername}}</td>
+                                    <td>{{user.manager.date}}</td>
+                                    <td>{{user.extra_activites}}</td>
+                                    <td>{{user.superVisor_feedback}}</td>
+                                    <td>{{user.headMaster_feedback}}</td>
+                                    <td>{{user.parents_feedback}}</td>
+                                    <td>{{user.specific_issues_from_center}}</td>
+
+
+                                </tr>
+
+                            </tbody>
+
+
+                            <tfoot>
+                                <tr>
+                                    <td colspan="40">
+                                        <mfBootstrapPaginator [rowsOnPageSet]="[5,10,25]"></mfBootstrapPaginator>
+                                        <!-- <mfBootstrapPaginator></mfBootstrapPaginator> -->
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+                      
+
+                    </div>
+                </div>
+                <div class="row" *ngIf="isdata_table" style="text-align: center;margin:10%;margin-left:30%">
+                    <h1>Oops!!&nbsp;</h1>
+                    <br>
+                    <span style="margin-top: 20px;">There is no Data For Selected Fields</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<ng-template #editmodal let-c="close" let-d="dismiss">
+    <form role="form">
+        <div class="row">
+            <span class="cross" style="cursor: pointer;margin-left: -18px;"><i class="fa fa-times"
+                    (click)="c('Close click')" aria-hidden="true"></i></span>
+            <label class="heading">
+                <span>Daily Info Table</span>
+            </label>
+        </div>
+        <div class="modal-body" style="margin-left: 1%;color: #867e95;font-size: 15px;">
+            <div class="accordion" id="accordionExample">
+                <div class="card">
+                    <div id="collapseOne" *ngIf="check" class="collapse show" aria-labelledby="headingOne"
+                        data-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 sideheading">Name: &nbsp;:</div>
+                                <div class="col-6" style="text-transform:capitalize;">{{data.manager.username}} </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Center Name : &nbsp;:</div>
+                                <div class="col-6" style="text-transform:capitalize;">{{data.manager.centername}} </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Date of visit :</div>
+                                <div class="col-6" style="text-transform:uppercase;">{{data.manager.date}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Educator Present :</div>
+                                <div class="col-6" style="text-transform:uppercase;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Activity plan Followed :</div>
+                                <div class="col-6" style="text-transform:uppercase;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Kids able to Participite in Activities :</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Class Segregated Level-wise : </div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">TLM's Used :</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer" style="border: none!important;">
+                <button class="footerbutton" type="button" (click)="c('Close click')"
+                    class="btn btn-default">Cancel</button>
+            </div>
+            </div>
+    </form>
+</ng-template>
+
+
+<ng-template #editm let-c="close" let-d="dismiss">
+    <form role="form">
+        <div class="row">
+            <span class="cross" style="cursor: pointer;margin-left: -18px;"><i class="fa fa-times"
+                    (click)="c('Close click')" aria-hidden="true"></i></span>
+            <label class="heading">
+                <span>Skills Tought Table</span>
+            </label>
+        </div>
+        <div class="modal-body" style="margin-left: 1%;color: #867e95;font-size: 15px;">
+            <div class="accordion" id="accordionExample">
+                <div class="card">
+                    <div id="collapseOne"        class="collapse show" aria-labelledby="headingOne"
+                        data-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 sideheading">Name: &nbsp;:</div>
+                                <div class="col-6" style="text-transform:capitalize;">{{data.manager.username}} </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Center Name : &nbsp;:</div>
+                                <div class="col-6" style="text-transform:capitalize;">{{data.manager.centername}} </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Month</div>
+                                <div class="col-6" style="text-transform:uppercase;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">No.of days managers visit:</div>
+                                <div class="col-6" style="text-transform:uppercase;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">No.of days educators present :</div>
+                                <div class="col-6" style="text-transform:uppercase;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">No. of days activity plan is followed :</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">No of days worksheets are done : </div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Activities done:</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Kids performance:</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Doing Training Module:</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Educators performance:</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Test Being Done Regularly:</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">PTM being conducted:</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer" style="border: none!important;">
+                <button class="footerbutton" type="button" (click)="c('Close click')"
+                    class="btn btn-default">Cancel</button>
+            </div>
+            </div>
+    </form>
+</ng-template>
+
+
+<ng-template #edits let-c="close" let-d="dismiss">
+    <form role="form">
+        <div class="row">
+            <span class="cross" style="cursor: pointer;margin-left: -18px;"><i class="fa fa-times"
+                    (click)="c('Close click')" aria-hidden="true"></i></span>
+            <label class="heading">
+                <span>Monthly Tought Table</span>
+            </label>
+        </div>
+        <div class="modal-body" style="margin-left: 1%;color: #867e95;font-size: 15px;">
+            <div class="accordion" id="accordionExample">
+                <div class="card">
+                    <div id="collapseOne"        class="collapse show" aria-labelledby="headingOne"
+                        data-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 sideheading">Name: &nbsp;:</div>
+                                <div class="col-6" style="text-transform:capitalize;">{{data.manager.username}} </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Center Name : &nbsp;:</div>
+                                <div class="col-6" style="text-transform:capitalize;">{{data.manager.centername}} </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Date of visit  :</div>
+                                <div class="col-6" style="text-transform:uppercase;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Name of the PGE skills of Level 1 :</div>
+                                <div class="col-6" style="text-transform:uppercase;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Name of the PGE skills of Level 2 :</div>
+                                <div class="col-6" style="text-transform:uppercase;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Name of the PGE skills of Level 3 :</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Name of the PGE skills of Level 4 : </div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Name of the PGE skills of Level 5 :</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Name of the ECE skills of Level 1 :</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Name of the ECE skills of Level 2 :</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Name of the ECE skills of Level 3 :</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer" style="border: none!important;">
+                <button class="footerbutton" type="button" (click)="c('Close click')"
+                    class="btn btn-default">Cancel</button>
+            </div>
+            </div>
+    </form>
+</ng-template>  
+
+
+<ng-template #editf let-c="close" let-d="dismiss">
+    <form role="form">
+        <div class="row">
+            <span class="cross" style="cursor: pointer;margin-left: -18px;"><i class="fa fa-times"
+                    (click)="c('Close click')" aria-hidden="true"></i></span>
+            <label class="heading">
+                <span>Feedback issues Table</span>
+            </label>
+        </div>
+        <div class="modal-body" style="margin-left: 1%;color: #867e95;font-size: 15px;">
+            <div class="accordion" id="accordionExample">
+                <div class="card">
+                    <div id="collapseOne"        class="collapse show" aria-labelledby="headingOne"
+                        data-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 sideheading">Name: &nbsp;:</div>
+                                <div class="col-6" style="text-transform:capitalize;">{{data.manager.username}} </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Center Name : &nbsp;:</div>
+                                <div class="col-6" style="text-transform:capitalize;">{{data.manager.centername}} </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Date of visit :</div>
+                                <div class="col-6" style="text-transform:uppercase;">{{data.manager.date}}</div>
+                            </div>
+                           
+
+                            <div class="row">
+                                <div class="col-6 sideheading">Extra Activity :</div>
+                                <div class="col-6" style="text-transform:uppercase;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Supervisor's Feedback :</div>
+                                <div class="col-6" style="text-transform:uppercase;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Headmaster's Feedback :</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Parent's Feedback : </div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 sideheading">Specific Issues from the center :</div>
+                                <div class="col-6" style="text-transform:capitalize;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer" style="border: none!important;">
+                <button class="footerbutton" type="button" (click)="c('Close click')"
+                    class="btn btn-default">Cancel</button>
+            </div>
+            </div>
+    </form>
+</ng-template>
